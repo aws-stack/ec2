@@ -1,0 +1,5 @@
+---
+default_volume:
+  - device_name: /dev/sda1
+    delete_on_termination: yes
+    volume_size: 8

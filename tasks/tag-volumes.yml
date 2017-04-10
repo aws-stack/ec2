@@ -1,0 +1,17 @@
+---
+- name: List instance volumes
+  ec2_vol:
+    region: "{{ stack.region }}"
+    instance: "{{ instance_id }}"
+    state: list
+  register: instance_volumes
+
+- name: Tag volumes
+  ec2_tag:
+    region: "{{ stack.region }}"
+    resource: "{{ item.id }}"
+    tags:
+      Name: "{{ name + '-' + item.attachment_set.device }}"
+  when: item.tags.Name is undefined
+  with_items: "{{ instance_volumes.volumes }}"
+

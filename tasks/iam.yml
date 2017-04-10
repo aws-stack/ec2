@@ -1,0 +1,17 @@
+---
+- name: Provision IAM role and instance profile
+  local_action:
+    module: iam
+    iam_type: role
+    name: "{{ profile }}"
+    state: present
+
+  #- name: Attach Policy to AWS Role
+  #  local_action:
+  #    module: iam_policy
+  #    iam_type: role
+  #    iam_name: "{{ profile }}"
+  #    policy_name: "{{ profile }}"
+  #    state: present
+  #    policy_document: "{{ role_path }}/files/instance-policy.json"
+

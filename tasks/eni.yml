@@ -1,0 +1,12 @@
+---
+- name: Create primary network interface
+  local_action:
+    module: ec2_eni
+    region: "{{ stack.region }}"
+    security_groups: "{{ ec2_conf.security_groups }}"
+    subnet_id: "{{ subnet_id }}"
+    private_ip_address: "{{ private_ip_address }}"
+    state: present
+  register: net_if
+
+

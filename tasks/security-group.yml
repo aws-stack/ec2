@@ -1,0 +1,29 @@
+---
+- include_vars: "../stacks/{{ stack.name }}/sg-{{sg_name}}.yml"
+
+- name: Security group created
+  ec2_group:
+    region: "{{ stack.region }}"
+    name: "{{ sg_name }}"
+    description: "{{ sg_description | default(sg_name) }}"
+    vpc_id: "{{ awsvpc.vpc.id }}"
+    rules: "{{ sg_rules | default([]) }}"
+  register: security_group
+  tags:
+    - network
+
+- set_fact:
+    security_group_ids: "{{ security_group_ids + [ security_group.group_id ] }}"
+
+- debug: var=security_group
+
+- name: Security group tagged
+  ec2_tag:
+    region: "{{ stack.region }}"
+    resource: "{{ security_group.group_id }}"
+    tags:
+      Name: "{{ sg_name }}"
+      Environment: "{{ stack.env }}"
+  tags:
+    - network
+

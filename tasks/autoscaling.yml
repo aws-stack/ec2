@@ -1,0 +1,45 @@
+---
+- set_fact: instance_name='{{ stack.name + "-" + ec2_conf.name }}'
+
+- set_fact: asg_subnets='{{ awsvpc | json_query("subnets[?contains(@.resource_tags.Name, `"+item+"`)].id") }}'
+  with_items: "{{ ec2_conf.subnets }}"
+  register: asg_subnets_result
+
+- set_fact: asg_subnets='{{ asg_subnets_result | json_query("results[].ansible_facts.asg_subnets[]") }}'
+
+- name: Create new launch configuration
+  local_action:
+    module: ec2_lc
+    image_id: "{{ ec2_conf.ami }}"
+    instance_type: "{{ ec2_conf.instance_type }}"
+    instance_profile_name: "{{ ec2_conf.instance_profile | default(stack.instance_profile) }}"
+    key_name: "{{ ec2_conf.key_name | default(omit) }}"
+    name: "{{ instance_name }}-lc"
+    region: "{{ stack.region }}"
+    ebs_optimized: "{{ ec2_conf.ebs_optimized | default(false) }}"
+    assign_public_ip: "{{ ec2_conf.assign_public_ip | default(omit) }}"
+    security_groups: "{{ security_group_ids }}"
+    volumes: "{{ (ec2_conf.volumes | default(default_volume)) + (ephemeral_volumes[ec2_conf.instance_type]|default([])) }}"
+    state: present
+    user_data: "{{ lookup('template', ec2_conf.userdata_template | default('userdata.sh')) }}"
+
+- name: Create autoscaling group
+  local_action:
+    module: ec2_asg
+    launch_config_name: "{{ instance_name }}-lc"
+    max_size: "{{ ec2_conf.max_cluster_size | default(1) }}"
+    min_size: "{{ ec2_conf.min_cluster_size | default(1) }}"
+    desired_capacity: "{{ ec2_conf.min_cluster_size | default(1) }}"
+    name: "{{ instance_name }}"
+    load_balancers: "{{ elb_name | default(omit) }}"
+    region: "{{ stack.region }}"
+    availability_zones: "{{ ec2_conf.azs | default(omit) }}"
+    tags:
+      - Name: "{{ instance_name }}"
+        propagate_at_launch: yes
+      - Environment: "{{ stack.env }}"
+        propagate_at_launch: yes
+    health_check_type: "{{ ec2_conf.health_check_type | default(omit) }}"
+    health_check_period: "{{ ec2_conf.health_check_period | default(omit) }}"
+    vpc_zone_identifier: "{{ asg_subnets }}"
+  register: autoscaling_group

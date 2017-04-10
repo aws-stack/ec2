@@ -1,0 +1,33 @@
+---
+- debug: var=ec2_conf
+
+- include: security-group.yml
+  with_items: "{{ ec2_conf.security_groups }}"
+  loop_control:
+    loop_var: sg_name
+
+- include: iam.yml
+  vars:
+    profile: '{{ ec2_conf.instance_profile | default(stack.instance_profile) }}'
+
+- include: server.yml
+  vars:
+    name: "{{ ec2_conf.name }}"
+    private_ip: "{{ ec2_conf.private_ip }}"
+    subnet_id: "{{ subnet_map[stack.name+'-'+ec2_conf.subnet] }}"
+    eip: "{{ ec2_conf.eip | default(omit) }}"
+    zone: "{{ stack.region + ec2_conf.subnet[-1] }}"
+  when: ec2_conf.ec2_type == 'instance'
+  static: no
+
+- include: server-group.yml
+  with_dict: "{{ ec2_conf.groups | default({}) }}"
+  when: ec2_conf.ec2_type == 'group'
+  loop_control:
+    loop_var: group
+  static: no
+
+- include: autoscaling.yml
+  when: ec2_conf.ec2_type == 'autoscaling'
+  static: no
+

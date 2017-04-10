@@ -1,0 +1,8 @@
+- name: Attach elastic IP
+  local_action:
+    module: ec2_eip
+    region: "{{ stack.region }}"
+    device_id: "{{ device_id }}"
+    ip: "{{ ip }}"
+  when: server.eip is defined
+

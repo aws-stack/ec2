@@ -2,6 +2,7 @@
 - include: eni.yml
   vars:
     private_ip_address: "{{ private_ip }}"
+  when: private_ip is defined
   register: net_if
 
 - name: launch server
@@ -10,7 +11,7 @@
     region: "{{ stack.region }}"
     key_name: "{{ ec2_conf.key_name | default(omit) }}"
     instance_type: "{{ ec2_conf.instance_type }}"
-    instance_profile_name: "{{ ec2_conf.instance_profile | default(stack.instance_profile) }}"
+    instance_profile_name: "{{ ec2_conf.instance_profile | default(stack.instance_profile) | default(omit) }}"
     image: "{{ ec2_conf.ami }}"
     zone: "{{ zone }}"
     ebs_optimized: "{{ ec2_conf.ebs_optimized | default(false) }}"

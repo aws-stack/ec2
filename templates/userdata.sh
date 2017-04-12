@@ -5,7 +5,7 @@ pip install --upgrade pip
 pip install ansible
 
 echo > /etc/ec2_conf.yml <<EOF
-{% ec2_conf | to_yaml %}
+{{ ec2_conf | to_yaml }}
 EOF
 
 ssh-keyscan {{ deploy_host }} >> ~/.ssh/known_hosts

@@ -42,10 +42,10 @@
   local_action:
     module: ec2_vol
     instance: "{{ instance_id }}"
-    volume_size: "{{ vol.size }}"
-    volume_type: "{{ vol.type }}"
-    device_name: "{{ vol.device }}"
-    name: "{{ name }}-{{ vol.device }}"
+    volume_size: "{{ vol.volume_size }}"
+    volume_type: "{{ vol.volume_type }}"
+    device_name: "{{ vol.device_name }}"
+    name: "{{ stack.name }}-{{ name }}-{{ vol.device_name }}"
     zone: "{{ zone }}"
     region: "{{ stack.region }}"
   with_items: "{{ ec2_conf.extra_volumes | default([]) }}"

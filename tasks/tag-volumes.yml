@@ -11,7 +11,7 @@
     region: "{{ stack.region }}"
     resource: "{{ item.id }}"
     tags:
-      Name: "{{ name + '-' + item.attachment_set.device }}"
-  when: item.tags.Name is undefined
+      Name: "{{ stack.name + '-'+ name + '-' + item.attachment_set.device }}"
+      Environment: "{{ stack.env }}"
   with_items: "{{ instance_volumes.volumes }}"
 

@@ -1,13 +1,13 @@
 ---
 - include: server.yml
   vars:
-    name: "{{ ec2_conf.name }}"
-    server_id: "{{ server.name }}"
-    private_ip: "{{ private_ip }}"
-    subnet_id: "{{ subnet_map[stack.region+'-'+group.key] }}"
+    name: "{{ ec2_conf.name }}-{{ server.id }}"
+    private_ip: "{{ server.private_ip }}"
+    subnet_id: "{{ subnet_map[stack.name+'-'+group.key] }}"
     eip: "{{ server.eip | default(omit) }}"
     zone: "{{ stack.region + group.key[-1] }}"
   with_items: "{{ group.value }}"
   loop_control:
     loop_var: server
+  static: no
 

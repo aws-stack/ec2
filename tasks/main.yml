@@ -22,7 +22,7 @@
   static: no
 
 - include: server-group.yml
-  with_dict: "{{ ec2_conf.groups | default({}) }}"
+  with_dict: "{{ ec2_conf.group | default({}) }}"
   when: ec2_conf.ec2_type == 'group'
   loop_control:
     loop_var: group

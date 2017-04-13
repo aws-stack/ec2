@@ -1,0 +1,13 @@
+---
+- include: instance.yml
+  vars:
+    name: "{{ stack.name }}-{{ ec2_conf.name }}-{{ instance_conf.id }}"
+    private_ip: "{{ instance_conf.private_ip }}"
+    subnet_id: "{{ subnet_map[stack.name+'-'+group.key] }}"
+    eip: "{{ instance_conf.eip | default(omit) }}"
+    zone: "{{ stack.region + group.key[-1] }}"
+  with_items: "{{ group.value }}"
+  loop_control:
+    loop_var: instance_conf
+  static: no
+

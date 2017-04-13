@@ -11,9 +11,9 @@
     profile: '{{ ec2_conf.instance_profile | default(stack.instance_profile) }}'
   when: ec2_conf.instance_profile is defined or stack.instance_profile is defined
 
-- include: server.yml
+- include: instance.yml
   vars:
-    name: "{{ ec2_conf.name }}"
+    name: "{{ stack.name }}-{{ ec2_conf.name }}"
     private_ip: "{{ ec2_conf.private_ip | default(None) }}"
     subnet_id: "{{ subnet_map[stack.name+'-'+ec2_conf.subnet] }}"
     eip: "{{ ec2_conf.eip | default(omit) }}"
@@ -21,7 +21,7 @@
   when: ec2_conf.ec2_type == 'instance'
   static: no
 
-- include: server-group.yml
+- include: instance-group.yml
   with_dict: "{{ ec2_conf.group | default({}) }}"
   when: ec2_conf.ec2_type == 'group'
   loop_control:

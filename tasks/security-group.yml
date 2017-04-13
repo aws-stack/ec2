@@ -4,7 +4,7 @@
 - name: Security group created
   ec2_group:
     region: "{{ stack.region }}"
-    name: "{{ sg_name }}"
+    name: "{{ stack.name }}-{{ sg_name }}"
     description: "{{ sg_description | default(sg_name) }}"
     vpc_id: "{{ awsvpc.vpc.id }}"
     rules: "{{ sg_rules | default([]) }}"
@@ -22,7 +22,7 @@
     region: "{{ stack.region }}"
     resource: "{{ security_group.group_id }}"
     tags:
-      Name: "{{ sg_name }}"
+      Name: "{{ stack.name }}-{{ sg_name }}"
       Environment: "{{ stack.env }}"
   tags:
     - network

@@ -1,5 +1,5 @@
 ---
-- include_vars: "../stacks/{{ stack.name }}/sg-{{sg_name}}.yml"
+- include_vars: "../stacks/{{ stack.name }}/{{sg_name}}.yml"
 
 - name: Security group created
   ec2_group:

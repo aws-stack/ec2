@@ -4,8 +4,9 @@ yum -y install python-crypto python-paramiko python-yaml python-jinja2 python-si
 pip install --upgrade pip
 pip install ansible
 
+{% set conf = { 'ec2_conf': ec2_conf } %}
 cat > /etc/ec2_conf.yml <<EOF
-{{ ec2_conf | to_yaml }}
+{{ conf | to_yaml }}
 EOF
 
 ssh-keyscan {{ deploy_host }} >> ~/.ssh/known_hosts

@@ -4,7 +4,7 @@ yum -y install python-crypto python-paramiko python-yaml python-jinja2 python-si
 pip install --upgrade pip
 pip install ansible
 
-echo > /etc/ec2_conf.yml <<EOF
+cat > /etc/ec2_conf.yml <<EOF
 {{ ec2_conf | to_yaml }}
 EOF
 
